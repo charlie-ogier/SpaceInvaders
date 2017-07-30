@@ -1,0 +1,54 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,167.4286,92)
+  Arrangement = Arrange.Vertical
+  Padding = 5
+  { PanelPlayArea Panel
+    MoveScaled(13,3,113,65)
+    Background = Color.Black
+    Expand = True
+  }
+  { HBox1 HBox
+    MoveScaled(-1,74,140,7)
+    Background = Color.Black
+    { PanelMove Panel
+      MoveScaled(6,2,48,3)
+    }
+    { PictureBoxGun PictureBox
+      MoveScaled(65,0,6.8571,6.8571)
+      Picture = Picture["baseshipa.png"]
+      Alignment = Align.Top
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(7,83,130,4)
+    { Panel3 Panel
+      MoveScaled(8,1,19,1)
+      Expand = True
+    }
+    { Label1 Label
+      MoveScaled(29,1,21,3)
+    }
+    { Panel1 Panel
+      MoveScaled(92,1,19,1)
+      Expand = True
+    }
+    { ButtonStop Button
+      MoveScaled(117,0,11,4)
+      Text = Shortcut(("Exit"), "E")
+    }
+  }
+  { TimerKeys #Timer
+    #MoveScaled(130,26)
+    Delay = 20
+  }
+  { TimerMove #Timer
+    #MoveScaled(131,40)
+    Delay = 500
+  }
+  { TimerGun #Timer
+    #MoveScaled(131,54)
+    Delay = 1
+  }
+}

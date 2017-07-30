@@ -1,0 +1,224 @@
+' Gambas class file
+
+bLRKey As Boolean
+bLRMove As Boolean
+byMove As Byte
+hMissile As PictureBox
+
+Public Sub Form_Open()
+
+CreateInvaders
+TimerMove.Start
+
+End
+
+Public Sub CreateInvaders()
+Dim hPicBox As PictureBox
+Dim siCount As Short
+Dim siTag As Short = 1
+Dim byDistance As Byte = 80
+
+PanelPlayArea.Children.Clear
+
+For siCount = 1 To 11
+  hPicBox = New PictureBox(PanelPlayArea) As "Row1"
+
+  With hPicBox
+    .Height = 48
+    .Width = 48
+    .x = 25 + (siCount * byDistance)
+    .y = 100
+    .Picture = Picture.Load("../saucer2a.png")
+    .Tag = siTag
+  End With
+  Inc siTag
+Next
+
+For siCount = 1 To 11
+  hPicBox = New PictureBox(PanelPlayArea) As "Row2"
+
+  With hPicBox
+    .Height = 48
+    .Width = 48
+    .x = 25 + (siCount * byDistance)
+    .y = 200
+    .Picture = Picture.Load("../saucer1a.png")
+    .Tag = siTag
+  End With
+  Inc siTag
+Next
+
+For siCount = 1 To 11
+  hPicBox = New PictureBox(PanelPlayArea) As "Row3"
+
+  With hPicBox
+    .Height = 48
+    .Width = 48
+    .x = 25 + (siCount * byDistance)
+    .y = 150
+    .Picture = Picture.Load("../saucer3a.png")
+    .Tag = siTag
+  End With
+  Inc siTag
+Next
+
+End
+
+Public Sub GoLeft()
+Dim siWidth As Short = PanelMove.Width 
+
+siWidth -= 10
+
+If siWidth < 0 Then siWidth = 0
+PanelMove.width = siWidth
+
+End
+
+Public Sub GoRight()
+Dim siWidth As Short = PanelMove.Width
+
+siWidth += 10
+
+If siWidth > Fmain.Width - 52 Then siWidth = FMain.Width - 52
+PanelMove.width = siWidth 
+
+End
+
+Public Sub TimerKeys_Timer()
+
+If bLRKey Then 
+  GoRight
+Else
+  GoLeft
+End If
+
+End
+
+Public Sub Form_Resize()
+
+Label1.text = "H: " & Str(Me.H) & " W: " & Str(Me.w) 
+
+End
+
+Public Sub Form_KeyPress()
+
+If Key.code = Key.Right Then 
+  bLRKey = True
+  TimerKeys.start
+Endif
+
+If Key.code = Key.Left Then 
+  bLRKey = False
+  TimerKeys.start
+Endif
+
+End
+
+Public Sub Form_KeyRelease()
+
+If Key.code = Key.Right Or Key.Code = Key.Left Then TimerKeys.stop
+If Key.code = Key.Space Then Fire
+
+End
+
+Public Sub Fire()
+Dim siStart As Short = (PictureBoxGun.x + (PictureBoxGun.Width / 2)) - 3
+
+If TimerGun.Enabled = True Then Return
+
+hMissile = New PictureBox(PanelPlayArea) As "Missile"
+With hMissile
+  .Height = 48
+  .Width = 48
+  .x = siStart
+  .Y = PanelPlayArea.Height - 8
+  .Picture = Picture.Load("../missile.png")
+End With
+
+TimerGun.Start
+
+End
+
+Public Sub TimerMove_Timer()
+Dim oObj As Object
+Dim siWay As Short = 10
+
+If bLRMove Then 
+  siWay = -10
+End If
+
+For Each oObj In PanelPlayArea.Children
+  If IsNull(oObj.tag) Then Continue
+  If oObj.tag > 0 Then oObj.x += siWay
+  Wait 0.05
+Next
+
+Inc byMove
+If byMove > 12 Then
+  byMove = 0
+  bLRMove = Not bLRMove
+  For Each oObj In PanelPlayArea.Children
+    If oObj.Tag Then oObj.y += 10
+  Next
+Endif
+  
+End
+
+Public Sub ButtonStop_Click()
+
+TimerKeys.Stop
+TimerMove.Stop
+Stop Event
+Wait 1
+Me.Close
+
+End
+
+Public Sub TimerGun_Timer()
+Dim oObj As Object
+Dim siX As Short = hMissile.X
+Dim siY As Short = hMissile.Y
+Dim siTemp1, siTemp2, siCount1, siCount2 As Short
+Dim siArrayX As New Short[]
+Dim siArrayY As New Short[]
+Dim siArrayTag As New Short[]
+
+hMissile.y -= 20
+If hMissile.y < -10 Then 
+  TimerGun.Stop
+  hMissile.Delete
+End If
+
+For Each oObj In PanelPlayArea.Children
+    If oObj.Tag Then
+    siArrayY.add(oObj.Y + 48)
+    siArrayX.add(oObj.X)
+    siArrayTag.add(oObj.Tag)
+  End If 
+  Next
+  
+For siCount1 = 0 To siArrayX.Max
+  If siX < siArrayX[siCount1] + 2 And siArrayX[siCount1] + 46 < siX Then
+    For siCount2 = 0 To siArrayY.max
+      If siY > siArrayY[siCount2] And siY < siArrayY[siCount2] - 12 Then
+        Hit(siArrayTag[siCount2])
+        hMissile.Delete
+        TimerGun.Stop
+        Return
+      Endif
+    Next
+  Endif
+Next
+
+End
+
+Public Sub Hit(siArrayTag As Short)
+Dim oObj As Object
+
+For Each oObj In PanelPlayArea.Children
+  If oObj.Tag Then
+    If oObj.Tag = siArrayTag Then oObj.Delete
+  Endif
+Next
+
+End
