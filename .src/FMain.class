@@ -4,11 +4,15 @@ bLRKey As Boolean
 bLRMove As Boolean
 byMove As Byte
 hMissile As PictureBox
+bPict As Boolean
+siSound As Short
 
 Public Sub Form_Open()
 
+PanelMove.Width = 600
 CreateInvaders
 TimerMove.Start
+TimerDoom.Start
 
 End
 
@@ -21,7 +25,7 @@ Dim byDistance As Byte = 80
 PanelPlayArea.Children.Clear
 
 For siCount = 1 To 11
-  hPicBox = New PictureBox(PanelPlayArea) As "Row1"
+  hPicBox = New PictureBox(PanelPlayArea) 
 
   With hPicBox
     .Height = 48
@@ -35,21 +39,7 @@ For siCount = 1 To 11
 Next
 
 For siCount = 1 To 11
-  hPicBox = New PictureBox(PanelPlayArea) As "Row2"
-
-  With hPicBox
-    .Height = 48
-    .Width = 48
-    .x = 25 + (siCount * byDistance)
-    .y = 200
-    .Picture = Picture.Load("../saucer1a.png")
-    .Tag = siTag
-  End With
-  Inc siTag
-Next
-
-For siCount = 1 To 11
-  hPicBox = New PictureBox(PanelPlayArea) As "Row3"
+  hPicBox = New PictureBox(PanelPlayArea) 
 
   With hPicBox
     .Height = 48
@@ -57,6 +47,20 @@ For siCount = 1 To 11
     .x = 25 + (siCount * byDistance)
     .y = 150
     .Picture = Picture.Load("../saucer3a.png")
+    .Tag = siTag
+  End With
+  Inc siTag
+Next
+
+For siCount = 1 To 11
+  hPicBox = New PictureBox(PanelPlayArea) 
+
+  With hPicBox
+    .Height = 48
+    .Width = 48
+    .x = 25 + (siCount * byDistance)
+    .y = 200
+    .Picture = Picture.Load("../saucer1a.png")
     .Tag = siTag
   End With
   Inc siTag
@@ -126,6 +130,11 @@ Dim siStart As Short = (PictureBoxGun.x + (PictureBoxGun.Width / 2)) - 3
 
 If TimerGun.Enabled = True Then Return
 
+TimerDoom.Stop
+Music.Load("shoot.ogg")
+Music.play
+TimerDoom.Start
+
 hMissile = New PictureBox(PanelPlayArea) As "Missile"
 With hMissile
   .Height = 48
@@ -161,7 +170,7 @@ If byMove > 12 Then
     If oObj.Tag Then oObj.y += 10
   Next
 Endif
-  
+
 End
 
 Public Sub ButtonStop_Click()
@@ -178,10 +187,10 @@ Public Sub TimerGun_Timer()
 Dim oObj As Object
 Dim siX As Short = hMissile.X
 Dim siY As Short = hMissile.Y
-Dim siTemp1, siTemp2, siCount1, siCount2 As Short
-Dim siArrayX As New Short[]
-Dim siArrayY As New Short[]
-Dim siArrayTag As New Short[]
+Dim siTemp1, siTemp2 As Short
+Dim siXYTag As New Short[33, 3]                                            '1st Number is the number of Saucers
+Dim siCount As Short
+Dim bGameEnd As Boolean = True
 
 hMissile.y -= 20
 If hMissile.y < -10 Then 
@@ -190,35 +199,72 @@ If hMissile.y < -10 Then
 End If
 
 For Each oObj In PanelPlayArea.Children
-    If oObj.Tag Then
-    siArrayY.add(oObj.Y + 48)
-    siArrayX.add(oObj.X)
-    siArrayTag.add(oObj.Tag)
+  If oObj.Tag Then
+    siXYTag[siCount, 0] = oObj.X
+    siXYTag[siCount, 1] = oObj.Y 
+    siXYTag[siCount, 2] = oObj.Tag
+    bGameEnd = False
   End If 
-  Next
-  
-For siCount1 = 0 To siArrayX.Max
-  If siX < siArrayX[siCount1] + 2 And siArrayX[siCount1] + 46 < siX Then
-    For siCount2 = 0 To siArrayY.max
-      If siY > siArrayY[siCount2] And siY < siArrayY[siCount2] - 12 Then
-        Hit(siArrayTag[siCount2])
-        hMissile.Delete
-        TimerGun.Stop
-        Return
-      Endif
-    Next
+  Inc siCount
+Next
+
+If bGameEnd = True Then
+  TimerDoom.Stop
+  TimerMove.Stop
+Endif
+
+ For siCount = 0 To 32
+  If siX > siXYTag[siCount, 0] + 2 And siX < siXYTag[siCount, 0] + 48 Then
+    If siXYTag[siCount, 1] > siY And siY < siXYTag[siCount, 1] + 48 Then
+     Try hMissile.Delete
+     Hit(siXYTag[siCount, 2])
+     TimerGun.stop
+     Return
+    End If 
   Endif
 Next
 
 End
 
-Public Sub Hit(siArrayTag As Short)
+Public Sub Hit(siTag As Short)
 Dim oObj As Object
+Dim siX, siY As Short
+Dim hBang As PictureBox
 
 For Each oObj In PanelPlayArea.Children
   If oObj.Tag Then
-    If oObj.Tag = siArrayTag Then oObj.Delete
+    If oObj.Tag = siTag Then
+    siX = oObj.X
+    siY = oObj.Y
+    oObj.Delete 
+      hBang = New PictureBox(PanelPlayArea)
+      With hBang
+        .X = siX
+        .Y = siY
+        .Picture = Picture.Load("../bang.png")
+      End With
+      Music.Load("invaderkilled.ogg")
+      Music.Play
+      TimerDoom.delay -= 5
+      TimerMove.delay -= 5
+      Wait 0.3 
+      hBang.delete
+    End If 
   Endif
 Next
+
+PanelPlayArea.Refresh
+
+End
+
+Public Sub TimerDoom_Timer()
+Dim sSound As String[] = ["fastinvader1.ogg", "fastinvader2.ogg", "fastinvader3.ogg", "fastinvader4.ogg"]
+
+If siSound > 3 Then siSound = 0
+
+Music.Load(sSound[siSound])
+Music.Play
+
+Inc siSound 
 
 End

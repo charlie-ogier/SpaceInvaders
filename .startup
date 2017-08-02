@@ -5,6 +5,7 @@ Space Invaders
 0.0.1
 
 gb.image
-gb.gui
+gb.gtk3
 gb.form
+gb.sdl2.audio
 

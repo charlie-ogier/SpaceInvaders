@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,167.4286,92)
+  MoveScaled(0,0,171.4286,92)
   Arrangement = Arrange.Vertical
   Padding = 5
   { PanelPlayArea Panel
@@ -13,7 +13,7 @@
     MoveScaled(-1,74,140,7)
     Background = Color.Black
     { PanelMove Panel
-      MoveScaled(6,2,48,3)
+      MoveScaled(6,1,48,3)
     }
     { PictureBoxGun PictureBox
       MoveScaled(65,0,6.8571,6.8571)
@@ -50,5 +50,9 @@
   { TimerGun #Timer
     #MoveScaled(131,54)
     Delay = 1
+  }
+  { TimerDoom #Timer
+    #MoveScaled(144,46)
+    Delay = 500
   }
 }

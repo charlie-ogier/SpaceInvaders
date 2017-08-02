@@ -1,17 +1,16 @@
-[Bookmarks]
-FMain=[]
-
 [Breakpoints]
 Count=0
 
 [DebugWindow]
-Count=3
-DebugWindow[1]="siArrayTag"
-DebugWindow[2]="siArrayX"
-DebugWindow[3]="siArrayY"
+Count=2
+DebugWindow[1]="siXYTag"
+DebugWindow[2]="oObj"
 
 [DebugWindow/oObj]
-Geometry=[-9,-8,224,1029]
+Geometry=[1098,91,250,1029]
+
+[DebugWindow/oObj.Picture]
+Geometry=[1232,78,250,1029]
 
 [DebugWindow/sTag]
 Geometry=[1129,-8,224,857]
@@ -28,13 +27,19 @@ Geometry=[1529,12,224,916]
 [DebugWindow/siArrayX]
 Geometry=[1072,11,224,924]
 
+[DebugWindow/siArrayXYT]
+Geometry=[985,-8,362,873]
+
 [DebugWindow/siArrayY]
 Geometry=[1301,12,224,914]
 
+[DebugWindow/siXYTag]
+Geometry=[1580,0,224,861]
+
 [OpenFile]
-Active=1
+Active=2
 File[1]=".src/FMain.form"
-File[2]=".src/FMain.class:0.200"
+File[2]=".src/FMain.class:21.255"
 Count=2
 
 [Watches]
